@@ -1,4 +1,3 @@
-from curses import use_env
 from .models import User
 
 class EmailAuthBackend(object):

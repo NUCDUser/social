@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['vgbassoonist.local', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'account.apps.AccountConfig',
+    'account_project.apps.AccountConfig',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     
     'allauth',
-    # 'allauth.account',
+    'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.twitter',
@@ -66,7 +66,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account_project.User'
 
 TEMPLATES = [
     {
@@ -141,9 +141,9 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/account/dashboard'
-LOGIN_URL = 'account:login'
-LOGOUT_URL = 'account:logout'
+LOGIN_REDIRECT_URL = 'account_project:dashboard'
+LOGIN_URL = 'account_project:login'
+LOGOUT_URL = 'account_project:logout'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -152,7 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'account.authentication.EmailAuthBackend',
+    'account_project.authentication.EmailAuthBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
@@ -177,16 +177,30 @@ SOCIALACCOUNT_PROVIDERS = {
         'VERIFIED_EMAIL': False,
         'VERSION': 'v13.0',
         'APP': {
-            'client_id': config('SOCIAL_AUTH_FACEBOOK_KEY'),
-            'secret': config('SOCIAL_AUTH_FACEBOOK_SECRET'),
+            'client_id': config('FACEBOOK_KEY'),
+            'secret': config('FACEBOOK_SECRET'),
+            'key': ''
+        }
+    },
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        },
+        'APP': {
+            'client_id': config('GOOGLE_OAUTH2_CLIENT_ID'),
+            'secret': config('GOOGLE_OAUTH2_CLIENT_SECRET'),
             'key': ''
         }
     }
 }
 
-SOCIAL_AUTH_FACEBOOK_KEY = config('SOCIAL_AUTH_FACEBOOK_KEY')
-SOCIAL_AUTH_FACEBOOK_SECRET = config('SOCIAL_AUTH_FACEBOOK_SECRET')
+SOCIALACCOUNT_ADAPTER = 'account_project.adapters.CustomSocialAccountAdapter'
 
-ACCOUNT_LOGOUT_REDIRECT_URL = 'account:dashboard'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'account_project:dashboard'
+SOCIALACCOUNT_EMAIL_REQUIRED = True
 
 SITE_ID = 1

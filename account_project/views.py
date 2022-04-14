@@ -28,14 +28,14 @@ def user_login(request):
     context = {
         'form': form,
     }
-    return render(request, 'account/login.html', context)
+    return render(request, 'account_project/login.html', context)
 
 @login_required
 def dashboard(request):
     context = {
         'section': 'dashboard',
     }
-    return render(request, 'account/dashboard.html', context)
+    return render(request, 'account_project/dashboard.html', context)
 
 
 def register(request):
@@ -46,10 +46,10 @@ def register(request):
             new_user.set_password(user_form.cleaned_data['password'])
             new_user.save()
             Profile.objects.create(user=new_user)
-            return render(request, 'account/register_done.html', {'new_user': new_user})
+            return render(request, 'account_project/register_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
-    return render(request, 'account/register.html', {'user_form': user_form})
+    return render(request, 'account_project/register.html', {'user_form': user_form})
 
 
 @login_required
@@ -71,4 +71,4 @@ def edit(request):
         'user_form': user_form,
         'profile_form': profile_form,
     }
-    return render(request, 'account/edit.html', context)
+    return render(request, 'account_project/edit.html', context)
