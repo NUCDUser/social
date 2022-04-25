@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['vgbassoonist.local', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'account_project.apps.AccountConfig',
+    'images.apps.ImagesConfig',
     
     'django.contrib.admin',
     'django.contrib.auth',
