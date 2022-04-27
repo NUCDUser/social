@@ -1,4 +1,5 @@
 {% extends 'account_project/base.html' %}
+{% load static %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -9,7 +10,7 @@
     <p>Welcome to your dashboard. You have bookmarked {{ total_images_created }} image{{ total_images_created|pluralize }}.</p>
   {% endwith %}
 
-  <p>Drag the following button to your bookmarks toolbar to bookmark images from other websites -> <a href="javascript:{% include 'images/bookmarklet_launcher.js' %}" class="button">Bookmark it</a></p>
+  <p>Drag the following button to your bookmarks toolbar to bookmark images from other websites -> <a href='javascript:{% include "images/bookmarklet_launcher.js" %}' class="button">Bookmark it</a></p>
 
   <p>
     Welcome to your dashboard.
