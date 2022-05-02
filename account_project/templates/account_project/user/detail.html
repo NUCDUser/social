@@ -1,0 +1,78 @@
+{% extends 'account_project/base.html' %}
+{% load thumbnail %}
+
+{% block title %}{{ user.get_full_name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ user.get_full_name }}</h1>
+  <div class="profile-info">
+    <img src="{% thumbnail user.profile.photo 180x180 %}" alt="user photo" class="user-detail">
+  </div>
+  {% with user.followers.count as total_followers %}
+    <span class="count">
+      <span class="total">{{ total_followers }}</span>
+      follower{{ total_followers|pluralize }}
+    </span>
+    <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="follow button">
+      {% if request.user not in user.followers.all %}
+        Follow
+      {% else %}
+        Unfollow
+      {% endif %}
+    </a>
+    <div class="image-container" id="image-list">
+      {% include 'images/image/list_ajax.html' with images=user.images_created.all %}
+    </div>
+  {% endwith %}
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    const followButton = document.querySelector("a.follow");
+    const totalFollowers = document.querySelector("span.count .total");
+
+    followButton.addEventListener("click", function(e) {
+      e.preventDefault();
+      fetch("{% url 'account_project:user_follow' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        mode: "same-origin",
+        body: JSON.stringify({
+          "id": this.dataset.id,
+          "action": this.dataset.action,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data["status"] == "ok") {
+          let previous_action = followButton.dataset.action;
+          let previous_followers = parseInt(totalFollowers.innerText);
+          followButton.dataset.action = (previous_action == "follow") ? "unfollow" : "follow";
+          followButton.innerText = (previous_action == "follow") ? "Unfollow" : "Follow";
+          totalFollowers.innerText = (previous_action == "follow") ? previous_followers + 1 : previous_followers - 1;
+        }
+      })
+      .catch((error) => {
+        console.log("Error: ", error)
+      })
+    })
+  </script>
+{% endblock content %}
+  

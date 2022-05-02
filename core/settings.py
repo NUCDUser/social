@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -205,5 +206,9 @@ SOCIALACCOUNT_ADAPTER = 'account_project.adapters.CustomSocialAccountAdapter'
 
 ACCOUNT_LOGOUT_REDIRECT_URL = 'account_project:dashboard'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
+
+ABSOLUTE_URL_OVERRIDES = {
+    'account_project.user': lambda u: reverse_lazy('account_project:user_detail', args=[u.username])
+}
 
 SITE_ID = 1

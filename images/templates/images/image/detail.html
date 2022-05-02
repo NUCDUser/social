@@ -8,19 +8,29 @@
   <a href="{{ image.image.url }}">
     <img src="{% thumbnail image.image 300x0 %}" alt="image" class="image-detail">
   </a>
-  {% with image.users_like.count as total_likes %}
+  {% with image.users_like.count as total_likes and image.users_like.all as users_like %}
     <div class="image-info">
       <div>
         <span class="count">
-          {{ total_likes }} like{{ total_likes|pluralize }}
+          <span class="total">{{ total_likes }}</span>
+          like{{ total_likes|pluralize }}
         </span>
+        <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+          {% if request.user not in users_like %}
+            Like
+          {% else %}
+            Unlike
+          {% endif %}
+        </a>
       </div>
       {{ image.description|linebreaks }}
     </div>
     <div class="image-likes">
-      {% for user in image.users_like.all %}
+      {% for user in users_like %}
         <div>
-          <img src="{{ user.profile.photo.url }}" alt="user photo">
+          {% if user.profile.photo.url %}
+            <img src="{{ user.profile.photo.url }}" alt="user photo">
+          {% endif %}
           <p>{{ user.first_name }}</p>
         </div>
       {% empty %}
@@ -28,5 +38,58 @@
       {% endfor %}
     </div>
   {% endwith %}
+
+  <script>
+    // Get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+  
+    // Fetch / toggle like button status
+    const likeButton = document.querySelector("a.like");
+    const totalLikes = document.querySelector("span.count .total");
+    likeButton.addEventListener("click", function(e){
+      e.preventDefault();
+      fetch("{% url 'images:like' %}", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        mode: 'same-origin',
+        body: JSON.stringify({
+          "id": this.dataset.id,
+          "action": this.dataset.action,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data["status"] == "ok") {
+          let previous_action = likeButton.dataset.action;
+          likeButton.dataset.action = likeButton.innerText = (previous_action == "like") ? "unlike" : "like";
+          let previous_likes = parseInt(totalLikes.innerText)
+          totalLikes.innerText = (previous_action == "like") ? previous_likes + 1 : previous_likes - 1;
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    });
+  </script>
 {% endblock content %}
+
+  
   
