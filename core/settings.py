@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['vgbassoonist.local', 'localhost', '127.0.0.1']
 INSTALLED_APPS = [
     'account_project.apps.AccountConfig',
     'images.apps.ImagesConfig',
+    'actions.apps.ActionsConfig',
     
     'easy_thumbnails',
     
@@ -210,5 +211,9 @@ SOCIALACCOUNT_EMAIL_REQUIRED = True
 ABSOLUTE_URL_OVERRIDES = {
     'account_project.user': lambda u: reverse_lazy('account_project:user_detail', args=[u.username])
 }
+
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
 
 SITE_ID = 1

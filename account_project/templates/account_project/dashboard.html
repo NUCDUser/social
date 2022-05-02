@@ -15,7 +15,15 @@
   <p>
     Welcome to your dashboard.
     {% if request.user.profile %}
-      You can <a href="{% url 'account_project:edit' %}">edit your profile</a> or <a href="{% url 'account_project:password_change' %}">change your password</a>.</p>
+      You can <a href="{% url 'account_project:edit' %}">edit your profile</a> or <a href="{% url 'account_project:password_change' %}">change your password</a>.
     {% endif %}
+  </p>
+
+  <h2>What's happening</h2>
+  <div id="action-list">
+    {% for action in actions %}
+      {% include "actions/action/detail.html" %}
+    {% endfor %}
+  </div>
 {% endblock content %}
   
